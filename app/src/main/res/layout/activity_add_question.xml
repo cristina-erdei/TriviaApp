@@ -28,14 +28,13 @@
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
     <EditText
-        android:id="@+id/add_qeustion_question_field"
+        android:id="@+id/questionField"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:minHeight="48dp"
-        android:text="Name"
         android:textSize="14dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/textView4"
@@ -47,18 +46,17 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="Raspuns"
-        app:layout_constraintStart_toStartOf="@+id/add_qeustion_question_field"
-        app:layout_constraintTop_toBottomOf="@+id/add_qeustion_question_field" />
+        app:layout_constraintStart_toStartOf="@+id/questionField"
+        app:layout_constraintTop_toBottomOf="@+id/questionField" />
 
     <EditText
-        android:id="@+id/add_question_answer_field"
+        android:id="@+id/answerField"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:minHeight="48dp"
-        android:text="Name"
         android:textSize="14dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/textView6"
@@ -70,11 +68,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="Valoare"
-        app:layout_constraintStart_toStartOf="@+id/add_question_answer_field"
-        app:layout_constraintTop_toBottomOf="@+id/add_question_answer_field" />
+        app:layout_constraintStart_toStartOf="@+id/answerField"
+        app:layout_constraintTop_toBottomOf="@+id/answerField" />
 
     <EditText
-        android:id="@+id/add_question_value_field"
+        android:id="@+id/valueField"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -93,20 +91,19 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="Categorie"
-        app:layout_constraintStart_toStartOf="@+id/add_question_value_field"
-        app:layout_constraintTop_toBottomOf="@+id/add_question_value_field" />
+        app:layout_constraintStart_toStartOf="@+id/valueField"
+        app:layout_constraintTop_toBottomOf="@+id/valueField" />
 
-    <EditText
-        android:id="@+id/add_question_category_field"
+    <Spinner
+        android:id="@+id/categorySpinner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:ems="10"
-        android:inputType="textPersonName"
+        android:entries="@array/Categories"
         android:minHeight="48dp"
-        android:text="Name"
-        android:textSize="14dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/textView8"
-        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+        app:layout_constraintTop_toBottomOf="@+id/textView8"
+        tools:ignore="SpeakableTextPresentCheck" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,8 +1,11 @@
 package com.example.trivia_app
 
 import adaptors.QuestionRecycleViewAdaptor
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -11,19 +14,25 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.trivia_app.databinding.ActivityMainBinding
-import com.github.kittinunf.fuel.httpGet
 import model.Question
 import model.QuestionList
+import okhttp3.*
+
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import java.io.IOException
 
 
 class MainActivity : AppCompatActivity() {
     lateinit var adaptor: QuestionRecycleViewAdaptor
     lateinit var recyclerView: RecyclerView
     lateinit var progress: ProgressBar
+    lateinit var mHandler: Handler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(layoutInflater)
+        mHandler = Handler(Looper.getMainLooper())
+
         binding.downloadButton.setOnClickListener {
             val inputString = binding.numberInput.text.toString()
             if (inputString == "") {
@@ -31,12 +40,16 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             val number = inputString.toInt()
+            if (number < 1 || number > 100) {
+                binding.numberInput.error = "The number must be between 1 and 100"
+                return@setOnClickListener
+            }
             handleDownload(number)
         }
 
         setContentView(binding.root)
         //TODO set proper data source
-        adaptor = QuestionRecycleViewAdaptor(QuestionList.getTestList())
+        adaptor = QuestionRecycleViewAdaptor()
         val layoutManager = LinearLayoutManager(this)
 
         recyclerView = binding.questionsReciclerView
@@ -45,27 +58,56 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = layoutManager
     }
 
+
     private fun handleDownload(number: Int) {
         progress.visibility = View.VISIBLE
+        recyclerView.visibility = View.GONE
 
         println("download: $number")
         val url = "https://jservice.io/api/random"
 
-        url.httpGet(listOf("count" to number)).responseString { request, response, result ->
-            println(response.responseMessage)
-                println(" hristos " + result.component1())
-                println(" code " + response.statusCode)
 
-            if ( response.statusCode == 200) {
-                recyclerView.visibility = View.GONE
-                val qs = result.component1()?.let { Question.fromJson(it) }
-                println(" dumnezo " + qs)
-                adaptor.updateData(qs ?: listOf())
+        val urlBuilder: HttpUrl.Builder = url.toHttpUrlOrNull()!!.newBuilder()
+        urlBuilder.addQueryParameter("count", number.toString())
 
+        val urll: String = urlBuilder.build().toString()
+
+
+        val client = OkHttpClient()
+        val request: Request = Request.Builder()
+            .url(urll)
+            .build()
+        val call: Call = client.newCall(request)
+        call.enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
             }
-                progress.visibility = View.GONE
-                recyclerView.visibility = View.VISIBLE
-        }
+
+            @SuppressLint("NotifyDataSetChanged")
+            override fun onResponse(call: Call, response: Response) {
+                if (response.code != 200) {
+                    println(response)
+                    return
+                }
+
+                val data = String(response.body?.bytes()!!)
+
+                val questions = Question.fromJson(data)
+
+                QuestionList.questions.clear()
+                questions?.let { QuestionList.questions.addAll(it) }
+
+                Thread.sleep(1000)
+
+                println(questions)
+                mHandler.post {
+                    adaptor.notifyDataSetChanged()
+                    progress.visibility = View.GONE
+                    recyclerView.visibility = View.VISIBLE
+                }
+            }
+
+        })
 
 
     }
@@ -84,5 +126,12 @@ class MainActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onResume() {
+        super.onResume()
+
+        adaptor.notifyDataSetChanged()
     }
 }

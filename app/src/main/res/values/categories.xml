@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="Categories">
+        <item>Muzica</item>
+        <item>Geografie</item>
+        <item>Istorie</item>
+        <item>Personalitati</item>
+    </string-array>
+</resources>
